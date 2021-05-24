@@ -1,0 +1,36 @@
+// Colour transition when hovering -- this is a bug in HighCharts to do list :( 
+// masking effects not very effective at first --> effective on the third hover -- also a bug in the lib
+// still has colour change issue T_T
+
+/* DRAFT 
+.highcharts-series-inactive .highcharts-point {
+    opacity: 0.2 !important;
+}
+.figures {
+    display: none;
+}
+.fade {
+    -webkit-animation-name: fade;
+    -webkit-animation-duration: 1.5s;
+    animation-name: fade;
+    animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+    from {
+        opacity: .4
+    }
+    to {
+        opacity: 1
+    }
+}
+
+@keyframes fade {
+    from {
+        opacity: .4
+    }
+    to {
+        opacity: 1
+    }
+}
+*/
