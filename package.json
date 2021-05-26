@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Document Personalisation",
   "repository": {},
-  "main": "script.js",
+  "private": true,
   "dependencies": {
     "neo4j-driver": "^4.2.3"
   },
