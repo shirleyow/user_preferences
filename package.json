@@ -1,0 +1,20 @@
+{
+  "name": "dperson",
+  "version": "1.0.0",
+  "description": "Document Personalisation",
+  "repository": {},
+  "main": "script.js",
+  "dependencies": {
+    "neo4j-driver": "^4.2.3"
+  },
+  "devDependencies": {
+    "webpack": "^5.37.1",
+    "webpack-cli": "^4.7.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "SO",
+  "license": "ISC",
+  "keywords": []
+}

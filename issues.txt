@@ -1,6 +1,10 @@
 // Colour transition when hovering -- this is a bug in HighCharts to do list :( 
 // masking effects not very effective at first --> effective on the third hover -- also a bug in the lib
 // still has colour change issue T_T
+// Loading sign kinda goes sideways before going to the middle - seems to be bc of the container position initially
+// direct connection to neo4j is insecure --> include authentication + encryption later when using office server
+
+// workaround for color transition issue
 
 /* DRAFT 
 .highcharts-series-inactive .highcharts-point {
@@ -34,3 +38,24 @@
     }
 }
 */
+
+.darkmode--activated p.highcharts-description {
+    /*background-color: #2a2a2b;*/
+    color: #E0E0E3;
+}
+
+.highcharts-description {
+    /*background: linear-gradient(#2a2a2b, #3e3e40);*/
+    padding: 10px;
+    margin-bottom: 0;
+}
+
+/* Using darkmode.js library
+const darkmode = new Darkmode();
+if (!darkmode.isActivated) {
+    darkmode.toggle();
+}*/
+
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+Entity: <b>{point.name}</b><br>

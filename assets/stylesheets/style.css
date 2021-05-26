@@ -1,0 +1,96 @@
+.container p {
+    font-size: large;
+}
+
+.container p.highcharts-description {
+    font-size: 15px;
+}
+
+.highcharts-figure {
+    min-width: 320px;
+    max-width: 800px;
+    margin: 1em auto;
+}
+
+body {
+    background-color: #2a2a2b;
+    color: #E0E0E3;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.42857143;
+}
+
+.highcharts-description {
+    background: linear-gradient(#2a2a2b, #3e3e40);
+    padding: 10px;
+    margin-bottom: 0;
+}
+
+#preloader {
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+
+.img-container {
+    text-align: center;
+    display: block;
+    padding-top: 30px;
+}
+
+#user-img {
+    width: 150px;
+    height: auto;
+}
+
+.slideshow-container {
+    max-width: 1000px;
+    position: relative;
+    margin: auto;
+}
+
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    margin-top: -22px;
+    padding: 16px;
+    color: darkgrey;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.3s ease;
+    border-radius: 3px;
+    user-select: none;
+}
+
+a:hover, a:focus, a:active {
+    text-decoration: none;
+}
+
+.next {
+    right: 0;
+}
+
+.prev:hover, .next:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: navy
+}
+
+.dot {
+    cursor: pointer;
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: darkgrey;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.6s ease;
+}
+
+.dot_active {
+    background-color:#0D98BA;
+}
+
+.dot:hover {
+    background-color:#3AB09E;
+}
