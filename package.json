@@ -5,9 +5,21 @@
   "repository": {},
   "private": true,
   "dependencies": {
-    "neo4j-driver": "^4.2.3"
+    "@fontsource/open-sans": "^4.3.0",
+    "@popperjs/core": "^2.9.2",
+    "bootstrap": "^5.0.1",
+    "css-loader": "^5.2.6",
+    "file-loader": "^6.2.0",
+    "font-awesome": "^4.7.0",
+    "highcharts": "^9.1.0",
+    "highcharts-more": "^0.1.7",
+    "neo4j-driver": "^4.2.3",
+    "path": "^0.12.7",
+    "style-loader": "^2.0.0"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "html-webpack-plugin": "^5.3.1",
     "webpack": "^5.37.1",
     "webpack-cli": "^4.7.0"
   },

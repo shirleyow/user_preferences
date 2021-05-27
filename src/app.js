@@ -1,5 +1,21 @@
 "use strict"
+
+// Importing modules
+import "@fontsource/open-sans/300.css";
+import "bootstrap"
+import "bootstrap/dist/css/bootstrap.css"
+import "bootstrap/dist/css/bootstrap.min.css"
+import '@fortawesome/fontawesome-free/js/fontawesome'
+import '@fortawesome/fontawesome-free/js/solid'
+import '@fortawesome/fontawesome-free/js/regular'
+import "highcharts"
+import "highcharts/modules/accessibility.js"
+import "highcharts/modules/exporting.js"
+import "highcharts-more/more.js"
+import "neo4j-driver/lib/browser/neo4j-web.min.js"
+
 // Neo4j DB
+const neo4j = require('neo4j-driver')
 const uri = "bolt://127.0.0.1:7687"
 const user = "neo4j"
 const password = "12345"
@@ -12,7 +28,7 @@ const userid = 5 // User Fiona Lim in the BBC dataset --> fetched from somewhere
 var overall_data = []
 var overall_data2 = [{ name: 'Entity Proportion', colorByPoint: true }]
 
-// Add uri, user and password in webkit.config.js EnvironmentPlugin 
+// Add uri, user and password in webkit.config.js EnvironmentPlugin and try using webpack as bundler
 // Add the neo4j graph below the charts --> to show what the charts were based on
 // Can animate the next and prev button to show 'To Topics' and 'To Entities' hahaha
 // Scrollspy?

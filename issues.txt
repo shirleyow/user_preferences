@@ -3,6 +3,7 @@
 // still has colour change issue T_T
 // Loading sign kinda goes sideways before going to the middle - seems to be bc of the container position initially
 // direct connection to neo4j is insecure --> include authentication + encryption later when using office server
+// high risk vulnerabilities?
 
 // workaround for color transition issue
 
