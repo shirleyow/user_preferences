@@ -4,7 +4,6 @@ const session = driver.session()
 var overall_data = []
 var overall_data2 = [{ name: 'Entity Proportion', colorByPoint: true }]
 
-// Add the neo4j graph below the charts --> to show what the charts were based on
 // Can animate the next and prev button to show 'To Topics' and 'To Entities' hahaha
 // Scrollspy?
 // Allow addition and deletion

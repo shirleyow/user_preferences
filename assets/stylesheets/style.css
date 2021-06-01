@@ -104,5 +104,23 @@ a:hover, a:focus, a:active {
     background-color: #FFC400;
     color: black;
     border-radius: 5px;
-    float: right;
+    padding: 6px 12px;
+    cursor: pointer;
+    margin-left: 40%;
+    font-size: 14px;
+}
+
+.btn, .dropdown-item {
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#search_btn {
+    background-color: #FFC400;
+    color: black;
+}
+
+#toggle_btn:hover, .btn-outline-secondary:not(:disabled):not(.disabled).active, .btn-outline-secondary:not(:disabled):not(.disabled):active, .show>.btn-outline-secondary.dropdown-toggle {
+    background-color: #ffd752;
+    color: black;
 }
