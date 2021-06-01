@@ -1,6 +1,8 @@
 "use strict"
 
 // closing of the session and the driver? 
+// allow the searching of nodes?
+// restarting the neo4j graph after various expansions? 
 
 // Neo4j DB
 const session2 = driver.session() // Create new session for simultaneous running of sessions.
@@ -138,8 +140,7 @@ const init = async function () {
             },
             minCollision: 60,
             neo4jData: modified_json,
-            nodeRadius: 25,
-            // If possible, allow for some kind of a search? 
+            nodeRadius: 25, 
             onNodeDoubleClick: async function (node) {
                 if (node.labels[0] == "Document") {
                     if (!node.hasOwnProperty("Expanded") || !node["Expanded"]) {
@@ -150,22 +151,14 @@ const init = async function () {
                     } // Currently can't hide the nodes on a second double-click
                 }
             },
-            /*onRelationshipDoubleClick: function (relationship) {
-                console.log('double click on relationship: ' + JSON.stringify(relationship));
-            },*/
             zoomFit: true
         });
     }
 }
 
+function resetGraph() {
+    document.getElementById("neo4jd3").innerHTML = ""
+    init()
+}
+
 init()
-
-/*(function (i, s, o, g, r, a, m) {
-    i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-        (i[r].q = i[r].q || []).push(arguments)
-    }, i[r].l = 1 * new Date(); a = s.createElement(o),
-        m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-
-ga('create', 'UA-430863-29', 'auto');
-ga('send', 'pageview');*/

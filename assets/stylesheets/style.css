@@ -99,3 +99,10 @@ a:hover, a:focus, a:active {
     height: 100%;
     overflow: hidden;
 }
+
+.restart-btn {
+    background-color: #FFC400;
+    color: black;
+    border-radius: 5px;
+    float: right;
+}
