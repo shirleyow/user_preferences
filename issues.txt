@@ -971,3 +971,17 @@ from neo4jd3.min.css
 how to close session2 and the driver? 
 // on application exit
     await driver.close()
+
+
+/*switch (node.id) {
+    case '25':
+        // Google
+        window.open(node.properties.url, '_blank');
+        break;
+    default:
+        var maxNodes = 5,
+            data = neo4jd3.randomD3Data(node, maxNodes);
+            console.log(data)
+        neo4jd3.updateWithD3Data(data);
+        break;
+}*/

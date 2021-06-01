@@ -6,10 +6,10 @@
 const session2 = driver.session() // Create new session for simultaneous running of sessions.
 var modified_json = {}
 var modified_doc_json = {}
+var topics_and_entities = []
 
 function truncateString(str, num) {
-    // If the length of str is less than or equal to num
-    // just return str -- don't truncate it.
+    // If the length of str is less than or equal to num, just return str -- don't truncate it.
     if (str.length <= num) {
         return str
     }
@@ -19,24 +19,34 @@ function truncateString(str, num) {
 
 async function expandDocNode(docid) {
     try {
-        await session2.run("MATCH (d:Document{DocID: $docid})-[r]->(n) WITH COLLECT(n) as a, COLLECT(r) as b CALL apoc.export.json.data(a, b, '../../../../../../xampp/htdocs/user_preferences/assets/doc_data.json', {jsonFormat:'JSON'}) YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data", { docid: docid })
+        await session2.run("MATCH (d:Document{DocID: $docid})-[r]->(n) WHERE NOT 'User' in labels(n) WITH COLLECT(n) as a, COLLECT(r) as b CALL apoc.export.json.data(a, b, '../../../../../../xampp/htdocs/user_preferences/assets/doc_data.json', {jsonFormat:'JSON'}) YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data", { docid: docid })
             .catch(error => {
                 console.log(error)
             })
     } finally {
         await $.getJSON("../assets/doc_data.json", function (json) {
+            var final_json = { "nodes": [], "rels": [] }
             json.nodes.forEach(obj => {
-                if (obj.labels[0] == 'Topic') {
-                    [...Array(obj.properties.words.length).keys()].forEach(i => {
-                        console.log(i) // construct word function 
-                    })
-                    //obj.properties['Word Function'] = obj.properties['num_docs']
-                    delete obj.properties['name']
-                    //delete obj.properties['source_score']
+                // To not recreate existing nodes, need to check if node's id is already present. 
+                if (topics_and_entities.indexOf(obj.id) == -1) {
+                    if (obj.labels[0] == 'Topic') {
+                        var word_function = "";
+                        var words_len = obj.properties.words.length;
+                        [...Array(words_len).keys()].forEach(i => {
+                            word_function += (Number(obj.properties.word_weights[i].toPrecision(3)) + "*" + obj.properties.words[i]) // construct word function
+                            if (i != words_len - 1) word_function += " + "
+                        })
+                        obj.properties['Word Function'] = word_function
+                        delete obj.properties['name']
+                        delete obj.properties['words']
+                        delete obj.properties['word_weights']
+                    }
+                    final_json.nodes.push(obj)
+                    topics_and_entities.push(obj.id)
                 }
             })
 
-            /*json.rels.forEach(obj => {
+            json.rels.forEach(obj => {
                 obj.type = obj.label
                 delete obj.label
 
@@ -44,8 +54,21 @@ async function expandDocNode(docid) {
                 delete obj.start
                 obj.endNode = obj.end.id
                 delete obj.end
-            });*/
-            modified_doc_json = json;
+
+                final_json.rels.push(obj)
+            });
+            modified_doc_json = {
+                "results": [
+                    {
+                        "columns": [
+                            "topic",
+                            "entity"
+                        ],
+                        "data": [{}]
+                    }
+                ]
+            }
+            modified_doc_json.results[0].data[0].graph = final_json;
         });
     }
 }
@@ -105,42 +128,27 @@ const init = async function () {
                 }
             ],
             icons: {
-                'Document': 'file', // Project
+                'Document': 'file-text',
                 'User': 'user',
+                'Topic': 'folder',
+                'Entity': 'bank'
             },
             images: {
-                'Document': '../neo4jd3/docs/img/twemoji/2198.svg', // Project
                 'User': '../neo4jd3/docs/img/twemoji/1f600.svg'
             },
             minCollision: 60,
             neo4jData: modified_json,
             nodeRadius: 25,
             // If possible, allow for some kind of a search? 
-            // Preloader? --> Ctrl-shift-f justLoaded
-            // onNodeDoubleClick show/hide HAS_TOPIC and HAS_ENTITY?
-            onNodeDoubleClick: function (node) {
+            onNodeDoubleClick: async function (node) {
                 if (node.labels[0] == "Document") {
                     if (!node.hasOwnProperty("Expanded") || !node["Expanded"]) {
+                        neo4jd3.updateWithD3Data(node)
+                        await expandDocNode(node.properties.DocID)
+                        neo4jd3.updateWithNeo4jData(modified_doc_json)
                         node["Expanded"] = true
-                        neo4jd3.updateWithD3Data(node)
-                        expandDocNode(node.properties.DocID)
-                    } else {
-                        node["Expanded"] = false
-                        neo4jd3.updateWithD3Data(node)
-                    }
+                    } // Currently can't hide the nodes on a second double-click
                 }
-                /*switch (node.id) {
-                    case '25':
-                        // Google
-                        window.open(node.properties.url, '_blank');
-                        break;
-                    default:
-                        var maxNodes = 5,
-                            data = neo4jd3.randomD3Data(node, maxNodes);
-                            console.log(data)
-                        neo4jd3.updateWithD3Data(data);
-                        break;
-                }*/
             },
             /*onRelationshipDoubleClick: function (relationship) {
                 console.log('double click on relationship: ' + JSON.stringify(relationship));
