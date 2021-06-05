@@ -6,7 +6,7 @@ var modified_json = {}
 var modified_doc_json = {}
 var topics_and_entities = []
 
-// JS involving the Search Function
+// JS involving the Search Function --> include an error message if search is invalid; or can look up validation!
 const search_opt = ['Search by DocID', 'Search by Entity Name', 'Search by TopicID']
 var curr_search = "0"
 var curr_input = ""

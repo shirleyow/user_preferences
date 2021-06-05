@@ -1,12 +1,14 @@
 "use strict"
 // Neo4j DB
 const session = driver.session()
+const top_topics = {} // topics and their words
+const top_entities = {} // entity names; using object here to store the count of docs containing each entity later.
 var overall_data = []
 var overall_data2 = [{ name: 'Entity Proportion', colorByPoint: true }]
 
+// Allow addition and deletion
 // Can animate the next and prev button to show 'To Topics' and 'To Entities' hahaha
 // Scrollspy?
-// Allow addition and deletion
 // Update in real time?
 // Maybe can write a div container around the figure with the CSS so that the loading will always be in the middle
 // bubble shadow --> to make less sticky or just remove? 
@@ -26,7 +28,7 @@ const start = async function (userid) {
 
         await session.run(
             // Pagerank score threshold being 5 when looking at Top Topics to be shown -- can be adjusted
-            'MATCH (u:User{UserID:$userid}) CALL gds.pageRank.stream("bbc_recs",{maxIterations: 100, dampingFactor: 0.85, sourceNodes:[u], relationshipWeightProperty: "weight"}) YIELD nodeId, score WITH gds.util.asNode(nodeId) as n, (score/u.source_score)*100 as score WHERE "Topic" in labels(n) AND score >= 5 RETURN n.TopicID AS topicid, score AS score, n.words AS words, n.word_weights AS weights ORDER BY score DESC LIMIT 10',
+            'MATCH (u:User{UserID:$userid}) CALL gds.pageRank.stream("bbc_recs",{maxIterations: 100, dampingFactor: 0.85, sourceNodes:[u], relationshipWeightProperty: "weight"}) YIELD nodeId, score WITH gds.util.asNode(nodeId) as n, (score/u.source_score)*100 as score WHERE "Topic" in labels(n) AND score >= 5 AND NOT n.TopicID IN u.disliked_tops RETURN n.TopicID AS topicid, score AS score, n.words AS words, n.word_weights AS weights ORDER BY score DESC LIMIT 10',
             { userid: userid }
         )
             .then(result => {
@@ -44,7 +46,10 @@ const start = async function (userid) {
                         data[index]['original'] = g * topic_score
                         index++
                     })
-                    topic_obj['name'] = "Topic " + record.get('topicid').toString()
+                    // To create global variable top_topics for use in updateInterests_script.js
+                    top_topics[record.get('topicid')] = {'words': record.get('words')}
+
+                    topic_obj['name'] = "Topic " + record.get('topicid').toString() 
                     topic_obj['data'] = data
                     overall_data.push(topic_obj)
                 })
@@ -55,7 +60,7 @@ const start = async function (userid) {
 
         await session.run(
             // Pagerank score threshold being 0.5 when looking at Top Entities to be shown -- can be adjusted
-            'MATCH (u:User{UserID:$userid}) CALL gds.pageRank.stream("bbc_recs",{maxIterations: 100, dampingFactor: 0.85, sourceNodes:[u], relationshipWeightProperty: "weight"}) YIELD nodeId, score WITH gds.util.asNode(nodeId) as n, (score/u.source_score)*100 as score WHERE "Entity" in labels(n) AND score >= 0.5 RETURN n.Name AS entname, score AS score ORDER BY score DESC LIMIT 10',
+            'MATCH (u:User{UserID:$userid}) CALL gds.pageRank.stream("bbc_recs",{maxIterations: 100, dampingFactor: 0.85, sourceNodes:[u], relationshipWeightProperty: "weight"}) YIELD nodeId, score WITH gds.util.asNode(nodeId) as n, (score/u.source_score)*100 as score WHERE "Entity" in labels(n) AND score >= 0.5 AND NOT n.Name IN u.disliked_ents RETURN n.Name AS entname, score AS score ORDER BY score DESC LIMIT 10',
             { userid: userid }
         )
             .then(result => {
@@ -65,6 +70,9 @@ const start = async function (userid) {
                 result.records.forEach(record => {
                     var entScore = record.get('score')
                     var entName = record.get('entname')
+                    // To create global variable top_entities for use in updateInterests_script.js
+                    top_entities[entName] = 0
+
                     total_scores += entScore
                     entScores.push(entScore)
                     entNames.push(entName)
@@ -275,8 +283,6 @@ const start = async function (userid) {
         });
     }
 }
-
-start(userid)
 
 var slideIndex = 1;
 showSlides(slideIndex);
