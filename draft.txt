@@ -11,6 +11,8 @@
 not focused on 
 // Wonder if can get the pie chart to show animation when second slide is clicked haha -- preloader also if not done loading? 
 
+// INCLUDE SIDE LABEL FOR EACH ENTITY -- only 1 side label e.g. ORG
+
 /* DRAFT 
 .highcharts-series-inactive .highcharts-point {
     opacity: 0.2 !important;

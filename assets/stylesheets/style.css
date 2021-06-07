@@ -31,6 +31,13 @@ body {
     width: 50%;
 }
 
+#preloader3, #preloader4 {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
+}
+
 .img-container {
     text-align: center;
     display: block;
@@ -71,7 +78,7 @@ a:hover, a:focus, a:active {
     right: 0;
 }
 
-.prev:hover, .next:hover {
+#prev:hover, #next:hover {
     background-color: rgba(255, 255, 255, 0.8);
     color: navy
 }
@@ -113,6 +120,11 @@ a:hover, a:focus, a:active {
 .btn, .dropdown-item {
     font-size: 14px;
     cursor: pointer;
+}
+
+.btn.btn-lg {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 15px;
 }
 
 #search_btn {
@@ -179,7 +191,7 @@ a.nav-link.active {
 }
 
 #pref_table tr td:hover {
-    background-color: rgba(255,255,255,.075);
+    background-color: rgba(255, 255, 255, .075);
 }
 
 .clickable.active {
@@ -193,11 +205,55 @@ table {
 
 #search_new {
     font-family: 'Open Sans', sans-serif;
-    margin-top: 10px;
+    margin-top: 20px;
     font-size: medium;
 }
 
 .ui-menu .ui-menu-item div {
     font-family: 'Open Sans', sans-serif;
     font-size: medium;
+}
+
+.autocomplete div {
+    font: initial;
+    color: black;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.42857143;
+}
+
+hr {
+    background-color: #e0e0e3c0;
+}
+
+.pill {
+    border-radius: 25px;
+    background-color: grey;
+    color: #fff;
+    padding: 10px;
+    margin: 3px;
+    font-size: 15px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.pill.selected {
+    background-color: #17a2b8;
+}
+
+.pill:hover {
+    background-color: #3AB09E;
+}
+
+p.summary {
+    text-align: center;
+    font-size: medium;
+    border-bottom: 1px solid grey;
+    margin-bottom: 0;
+    padding-bottom: 5px;
+}
+
+.list-group-item {
+    background-color: inherit;
+    text-align: center;
+    border: 0;
 }

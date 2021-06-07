@@ -3,16 +3,15 @@
 const session = driver.session()
 const top_topics = {} // topics and their words
 const top_entities = {} // entity names; using object here to store the count of docs containing each entity later.
+/* need to add the liked topics or entities here so that they won't appear in the suggestions again */
+const suggested_topics = []
+const suggested_entities = []
 var overall_data = []
 var overall_data2 = [{ name: 'Entity Proportion', colorByPoint: true }]
 
-// Allow addition and deletion
+// Can add side labels for entities in pie chart
 // Can animate the next and prev button to show 'To Topics' and 'To Entities' hahaha
-// Scrollspy?
-// Update in real time?
-// Maybe can write a div container around the figure with the CSS so that the loading will always be in the middle
-// bubble shadow --> to make less sticky or just remove? 
-// Can consider storing things in localstorage or sessionstorage
+// Scrollspy? 
 
 const start = async function (userid) {
     try {
@@ -25,14 +24,14 @@ const start = async function (userid) {
             // Creating Cypher graph
             await session.run("CALL gds.graph.create.cypher('bbc_recs','MATCH (n) RETURN id(n) AS id','MATCH (s)-[r]->(t) RETURN id(s) AS source, id(t) AS target, COALESCE(r.weight,2) AS weight') YIELD graphName RETURN null")
         }
-
         await session.run(
             // Pagerank score threshold being 5 when looking at Top Topics to be shown -- can be adjusted
-            'MATCH (u:User{UserID:$userid}) CALL gds.pageRank.stream("bbc_recs",{maxIterations: 100, dampingFactor: 0.85, sourceNodes:[u], relationshipWeightProperty: "weight"}) YIELD nodeId, score WITH gds.util.asNode(nodeId) as n, (score/u.source_score)*100 as score WHERE "Topic" in labels(n) AND score >= 5 AND NOT n.TopicID IN u.disliked_tops RETURN n.TopicID AS topicid, score AS score, n.words AS words, n.word_weights AS weights ORDER BY score DESC LIMIT 10',
+            'MATCH (u:User{UserID:$userid}), (n) WHERE (n.TopicID IN u.liked_tops OR n.Name+" ("+labels(n)[1..][0]+")" IN u.liked_ents) AND NOT (u)-[:READ]->()-[:HAS_ENTITY|:HAS_TOPIC]->(n) WITH COLLECT(n) AS likes MATCH (u:User{UserID:5}) CALL gds.pageRank.stream("bbc_recs",{maxIterations: 100, dampingFactor: 0.85, sourceNodes:[u]+likes, relationshipWeightProperty: "weight"}) YIELD nodeId, score WITH gds.util.asNode(nodeId) as n, (score/u.source_score)*100 as score WHERE "Topic" in labels(n) AND NOT n.TopicID IN u.disliked_tops RETURN n.TopicID AS topicid, score AS score, n.words AS words, n.word_weights AS weights ORDER BY score DESC LIMIT 10',
+            /*'MATCH (u:User{UserID:$userid}) CALL gds.pageRank.stream("bbc_recs",{maxIterations: 100, dampingFactor: 0.85, sourceNodes:[u], relationshipWeightProperty: "weight"}) YIELD nodeId, score WITH gds.util.asNode(nodeId) as n, (score/u.source_score)*100 as score WHERE "Topic" in labels(n) AND NOT n.TopicID IN u.disliked_tops RETURN n.TopicID AS topicid, score AS score, n.words AS words, n.word_weights AS weights ORDER BY score DESC LIMIT 10',*/
             { userid: userid }
         )
             .then(result => {
-                result.records.forEach(record => {
+                result.records.filter(r => r.get('score') >= 5).forEach(record => { // can use .slice(0,10) to limit the number of records filtered
                     var topic_obj = {}
                     var data = []
                     var topic_score = record.get('score')
@@ -46,12 +45,15 @@ const start = async function (userid) {
                         data[index]['original'] = g * topic_score
                         index++
                     })
-                    // To create global variable top_topics for use in updateInterests_script.js
+                    // To create global variable top_topics for use in updateInterests_script.js and addInterests_script.js
                     top_topics[record.get('topicid')] = {'words': record.get('words')}
 
                     topic_obj['name'] = "Topic " + record.get('topicid').toString() 
                     topic_obj['data'] = data
                     overall_data.push(topic_obj)
+                })
+                result.records.filter(r => r.get('score') < 5).slice(0,3).forEach(record => { // using slicing here to suggest only the top 3 topics that have scores < 5
+                    suggested_topics.push({ 'val': record.get('topicid'), 'words': record.get('words') })
                 })
             })
             .catch(error => {
@@ -60,22 +62,26 @@ const start = async function (userid) {
 
         await session.run(
             // Pagerank score threshold being 0.5 when looking at Top Entities to be shown -- can be adjusted
-            'MATCH (u:User{UserID:$userid}) CALL gds.pageRank.stream("bbc_recs",{maxIterations: 100, dampingFactor: 0.85, sourceNodes:[u], relationshipWeightProperty: "weight"}) YIELD nodeId, score WITH gds.util.asNode(nodeId) as n, (score/u.source_score)*100 as score WHERE "Entity" in labels(n) AND score >= 0.5 AND NOT n.Name IN u.disliked_ents RETURN n.Name AS entname, score AS score ORDER BY score DESC LIMIT 10',
+            'MATCH (u:User{UserID:$userid}), (n) WHERE (n.TopicID IN u.liked_tops OR n.Name+" ("+labels(n)[1..][0]+")" IN u.liked_ents) AND NOT (u)-[:READ]->()-[:HAS_ENTITY|:HAS_TOPIC]->(n) WITH COLLECT(n) AS likes MATCH (u:User{UserID:5}) CALL gds.pageRank.stream("bbc_recs",{maxIterations: 100, dampingFactor: 0.85, sourceNodes:[u]+likes, relationshipWeightProperty: "weight"}) YIELD nodeId, score WITH gds.util.asNode(nodeId) as n, (score/u.source_score)*100 as score WHERE "Entity" in labels(n) AND NOT n.Name IN u.disliked_ents RETURN n.Name AS entname, labels(n)[1..][0] AS ent_label, score AS score ORDER BY score DESC LIMIT 20',
+            /*'MATCH (u:User{UserID:$userid}) CALL gds.pageRank.stream("bbc_recs",{maxIterations: 100, dampingFactor: 0.85, sourceNodes:[u], relationshipWeightProperty: "weight"}) YIELD nodeId, score WITH gds.util.asNode(nodeId) as n, (score/u.source_score)*100 as score WHERE "Entity" in labels(n) AND NOT n.Name IN u.disliked_ents RETURN n.Name AS entname, labels(n)[1..][0] AS ent_label, score AS score ORDER BY score DESC LIMIT 20',*/
             { userid: userid }
         )
             .then(result => {
                 var total_scores = 0
                 var entScores = []
                 var entNames = []
-                result.records.forEach(record => {
+                result.records.filter(r => r.get('score') >= 0.5).forEach(record => {
                     var entScore = record.get('score')
                     var entName = record.get('entname')
-                    // To create global variable top_entities for use in updateInterests_script.js
-                    top_entities[entName] = 0
+                    // To create global variable top_entities for use in updateInterests_script.js and addInterests_script.js
+                    top_entities[entName] = {}
 
                     total_scores += entScore
                     entScores.push(entScore)
                     entNames.push(entName)
+                })
+                result.records.filter(r => r.get('score') < 0.5).slice(0,10).forEach(record => {
+                    suggested_entities.push({ 'val': record.get('entname'), 'sidelab': record.get('ent_label') })
                 })
                 var data = []
                 var proportions = []
@@ -185,7 +191,7 @@ const start = async function (userid) {
                 text: 'Topics We Think You Might Be Interested In'
             },
             subtitle: {
-                text: 'Based on documents you viewed and documents users similar to you viewed (to a smaller extent).'
+                text: 'Based on documents you viewed, interests you have indicated, and documents users similar to you viewed (to a smaller extent).'
             },
             tooltip: {
                 useHTML: true,
@@ -213,7 +219,7 @@ const start = async function (userid) {
                     //allowPointSelect: true,
                     //cursor: 'pointer',
                     minSize: '20%',
-                    maxSize: '100%',
+                    maxSize: '90%',
                     zMin: 0,
                     zMax: 1000,
                     layoutAlgorithm: {
@@ -253,7 +259,7 @@ const start = async function (userid) {
                 text: 'Entities We Think You Might Be Interested In'
             },
             subtitle: {
-                text: 'Based on documents you viewed and documents users similar to you viewed (to a smaller extent).'
+                text: 'Based on documents you viewed, interests you have indicated, and documents users similar to you viewed (to a smaller extent).'
             },
             tooltip: {
                 useHTML: true,

@@ -11,8 +11,7 @@
     <link rel="stylesheet" href="../neo4jd3/docs/css/neo4jd3.min.css?v=0.0.1">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
-    <link href = "https://code.jquery.com/ui/1.12.1/themes/dark-hive/jquery-ui.css" rel = "stylesheet">
-
+    <link rel="stylesheet" type="text/css" href="https://kraaden.github.io/autocomplete/autocomplete.css">
 </head>
 
 <body>
@@ -85,6 +84,7 @@
                     <button class="restart-btn float-right" onclick="resetGraph()">Reset Graph</button>
                 </div>
             </div>
+            <!--<img id="preloader4" src="../assets/images/preloader.gif" alt="Loading..."></img>-->
             <div id="neo4jd3"></div>
         </div>
         <br><br>
@@ -105,23 +105,52 @@
                         <tbody id="pref_table">
                         </tbody>
                         <p style="font-size: small; margin-top: 10px">Legend: <i class='far fa-check-circle checked'
-                                style="float:none; padding-left: 5px; padding-right: 5px"></i> Our Records of Your
-                            Existing
+                                style="float:none; padding-left: 5px; padding-right: 5px"></i> Our Records/Predictions of Your
+                            Current
                             Preferences; <i class='far fa-check-circle'
                                 style="float:none; padding-left: 5px; padding-right: 5px"></i> Preferences Selected To
                             Be
                             Removed</p>
+                        <img id="preloader3" src="../assets/images/preloader.gif" alt="Loading..."></img>
                     </table>
                     <button class="btn btn-lg btn-primary float-right" onclick="updateExistingPref()">Update</button>
-                    <br>
+                    <br><br>
                 </div>
                 <div id="adding" class="tab-pane fade">
-                    <div class = "ui-widget">
-                        <input id = "search_new" class="form-control" placeholder="Search for a Topic or an Entity (ex: Singapore)">
-                     </div>
-                     <br>
+                    <div class="ui-widget">
+                        <input id="search_new" class="form-control"
+                            placeholder="Search for a Topic or an Entity (ex: UK)">
+                    </div>
+                    <br>
+                    <div class="selected_values" id="selected_values">
+                        <b>Selected from Search: </b>
+
+                    </div>
+                    <hr>
+                    <div class="suggested_values" id="suggested_values">
+                        <b>Suggested: </b>
+                    </div>
+                    <br>
+                    <button class="btn btn-lg btn-primary float-right" onclick="addToLikedItems()">Add</button>
+                    <br><br>
                 </div>
             </div>
+            <br><br>
+            <div class="curr_pref">
+                <div class="sec_header">Preferences Currently Indicated</div>
+                <p class="sec_subheader">Topics or entities that you have explicitly added to or removed from preferences previously.</p>
+                <div class="row">
+                    <div class="col" style="border-right: 1px solid grey">
+                        <p class="summary">We will show you <b style="color: #7ba9fd">more</b> of:</p>
+                        <ul id="showmore" class="list-group"></ul>
+                    </div>
+                    <div class="col">
+                        <p class="summary">We will show you <b style="color:rgb(198, 155, 255)">less</b> of:</p>
+                        <ul id="showless" class="list-group"></ul>
+                    </div>
+                </div>
+            </div>
+            <br><br>
             <footer class="page-footer font-small">
                 <div class="footer-copyright text-center py-3">
                     <a href="https://github.com/shirleyow/">
@@ -140,7 +169,7 @@
     <script src="../neo4jd3/docs/js/neo4jd3.js?v=0.0.1"></script>
     <script src="https://unpkg.com/neo4j-driver@4.2.3/lib/browser/neo4j-web.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://kraaden.github.io/autocomplete/autocomplete.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
         integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
         crossorigin="anonymous"></script>

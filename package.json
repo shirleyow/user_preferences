@@ -5,6 +5,7 @@
   "repository": {},
   "private": true,
   "dependencies": {
+    "autocompleter": "^6.1.0",
     "d3": "^6.7.0",
     "neo4j-driver": "^4.2.3"
   },

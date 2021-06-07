@@ -1,3 +1,5 @@
 To change Neo4j Settings / neo4j.conf to as follows: 
 - Include this: apoc.export.file.enabled=true
 - Include this too: apoc.import.file.use_neo4j_config=false
+
+Also, need to run webapp on localhost in order for some stuff to work. 
