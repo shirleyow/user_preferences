@@ -11,11 +11,11 @@ const setup = async function (userid) {
         var topics = Object.keys(top_topics) // Array of top topics based on PageRank score.
         var entities = Object.keys(top_entities) // Array of top entities based on PageRank score.
         // WHERE r.weight > threshold --> this threshold depends on how recent you want the documents that you count (with the topic within) to be!
-        await session3.run("MATCH (u:User{UserID:$userid})-[r:READ]->(d:Document)-[:HAS_TOPIC|HAS_ENTITY]->(t) WHERE r.weight > 0 RETURN t.TopicID AS topic, t.Name AS entity, labels(t)[1..][0] AS sidelab, COUNT(d) AS count", { userid: userid })
+        await session3.run("MATCH (u:User{UserID:$userid})-[r:READ]->(d:Document)-[:HAS_TOPIC|HAS_ENTITY]->(t) WHERE r.weight > 0 RETURN t.TopicID AS topic, t.Name AS entity, COUNT(d) AS count", { userid: userid })
             .then(result => {
                 result.records.filter(r => ((r.get('topic') && topics.includes(r.get('topic').toString())) || entities.includes(r.get('entity')))).forEach(record => {
                     if (record.get('topic')) top_topics[record.get('topic')]['doc_count'] = record.get('count')
-                    else top_entities[record.get('entity')] = {'count': record.get('count'), 'sidelab': record.get('sidelab')}
+                    else top_entities[record.get('entity')]['count'] = record.get('count')
                 })
             })
             .catch(error => {
@@ -89,9 +89,8 @@ async function updateExistingPref() {
             // and thus the recommmendations. By storing the disliked topics / entities, can manually adjust the recommendations such that docs containing
             // the disliked topics and entities will not be recommended to user. 
         } finally {
-            start(userid)
             init()
-            prep() // includes await setup(userid)
+            prep() // includes await setup(userid) and start(userid)
             location.reload()
         }
     }

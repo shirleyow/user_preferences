@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Document Personalisation</title>
+    <title>Mega User Profile</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="../neo4jd3/docs/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
@@ -19,7 +19,7 @@
         <div class="img-container">
             <img id="user-img" class="img-fluid" src="../assets/images/user.png" alt="user"></img>
         </div>
-        <h1 class="text-center"><b>Document Personalisation</b></h1>
+        <h1 class="text-center"><b>MEGA User Profile</b></h1>
         <p class="text-center">We make your document recommendations more relevant by customising the documents returned
             to your preferences.</p>
         <br>
@@ -56,7 +56,7 @@
             <span class="dot" onclick="currentSlide(2)"></span>
         </div>
         <br><br>
-        <div class="slideshow-container">
+        <div class="slideshow-container" id="graphProfile">
             <div class="sec_header">Your Profile in a Graph</div>
             <p class="sec_subheader">You can <b><u>HOVER</u></b> over each node for more information; <b><u>DRAG</u></b>
                 each node to desired positions; <b><u>DOUBLE-CLICK</u></b> on Document nodes to expand its topic and
@@ -113,7 +113,7 @@
                             Removed</p>
                         <img id="preloader3" src="../assets/images/preloader.gif" alt="Loading..."></img>
                     </table>
-                    <button class="btn btn-lg btn-primary float-right" onclick="updateExistingPref()">Update</button>
+                    <button class="btn btn-lg btn-primary float-right" onclick="updateExistingPref()">Remove Preferences</button>
                     <br><br>
                 </div>
                 <div id="adding" class="tab-pane fade">
@@ -131,7 +131,7 @@
                         <b>Suggested: </b>
                     </div>
                     <br>
-                    <button class="btn btn-lg btn-primary float-right" onclick="addToLikedItems()">Add</button>
+                    <button class="btn btn-lg btn-primary float-right" onclick="addToLikedItems()">Add Preferences</button>
                     <br><br>
                 </div>
             </div>
@@ -145,7 +145,7 @@
                         <ul id="showmore" class="list-group"></ul>
                     </div>
                     <div class="col">
-                        <p class="summary">We will show you <b style="color:rgb(198, 155, 255)">less</b> of:</p>
+                        <p class="summary">We will show you <b style="color:#CF6679">less</b> of:</p>
                         <ul id="showless" class="list-group"></ul>
                     </div>
                 </div>

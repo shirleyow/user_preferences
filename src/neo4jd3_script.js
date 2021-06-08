@@ -5,6 +5,7 @@ const session2 = driver.session() // Create new session for simultaneous running
 var modified_json = {}
 var modified_doc_json = {}
 var topics_and_entities = []
+var expandedDoc = false
 
 // JS involving the Search Function --> include an error message if search is invalid; or can look up validation!
 const search_opt = ['Search by DocID', 'Search by Entity Name', 'Search by TopicID']
@@ -71,7 +72,7 @@ async function updateGraph(inp, search_mtd) {
                         console.log(error)
                     })
                 break
-            
+
             case "2":
                 inp = parseInt(inp)
                 await session2.run("MATCH (t:Topic{TopicID:$inp})-[r:TOPIC_WITHIN]->(d:Document)-[:READ_BY]->(u:User{UserID:$userid}) WITH [t]+COLLECT(d) as a, COLLECT(r) as b CALL apoc.export.json.data(a, b, '../../../../../../xampp/htdocs/user_preferences/assets/user_data.json', {jsonFormat:'JSON'}) YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data", { userid: userid, inp: inp }) // By default exports to neo4j relate-data dmbs
@@ -159,6 +160,12 @@ function truncateString(str, num) {
 }
 
 async function expandDocNode(docid) {
+    // When expanded and graph is resetted, doc nodes can no longer be expanded. --> BUG
+    // This function still works, but seemingly a problem with updating the graph :(
+    // Currently, just avoiding the issue by disallowing double clicking when doc nodes are expanded and graph is resetted.
+    // Refreshing the page would also 'resolve' the issue. 
+    // Perhaps due to storage or cache used when updating graph. 
+    expandedDoc = true
     try {
         await session2.run("MATCH (d:Document{DocID: $docid})-[r]->(n) WHERE NOT 'User' in labels(n) WITH COLLECT(n) as a, COLLECT(r) as b CALL apoc.export.json.data(a, b, '../../../../../../xampp/htdocs/user_preferences/assets/doc_data.json', {jsonFormat:'JSON'}) YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data", { docid: docid })
             .catch(error => {
@@ -227,8 +234,16 @@ const init = async function () {
             json.nodes.forEach(obj => {
                 if (obj.labels[0] == 'User') {
                     obj.properties['Number of Docs Read'] = obj.properties['num_docs']
+                    if (obj.properties['disliked_tops'].length != 0) obj.properties['Disliked Topics'] = obj.properties['disliked_tops']
+                    if (obj.properties['disliked_ents'].length != 0) obj.properties['Disliked Entities'] = obj.properties['disliked_ents']
+                    if (obj.properties['liked_tops'].length != 0) obj.properties['Liked Topics'] = obj.properties['liked_tops']
+                    if (obj.properties['liked_ents'].length != 0) obj.properties['Liked Entities'] = obj.properties['liked_ents']
                     delete obj.properties['num_docs']
                     delete obj.properties['source_score']
+                    delete obj.properties['disliked_tops']
+                    delete obj.properties['disliked_ents']
+                    delete obj.properties['liked_tops']
+                    delete obj.properties['liked_ents']
                 }
 
                 if (obj.labels[0] == 'Document') {
@@ -261,38 +276,73 @@ const init = async function () {
             modified_json.results[0].data[0].graph = json;
         });
         // console.log(JSON.stringify(modified_json))
-        var neo4jd3 = new Neo4jd3('#neo4jd3', {
-            highlight: [ // highlighted nodes
-                {
-                    class: 'User',
-                    property: 'UserID',
-                    value: userid
-                }
-            ],
-            icons: {
-                'Document': 'file-text',
-                'User': 'user',
-                'Topic': 'folder',
-                'Entity': 'bank'
-            },
-            images: {
-                'User': '../neo4jd3/docs/img/twemoji/1f600.svg'
-            },
-            minCollision: 60,
-            neo4jData: modified_json,
-            nodeRadius: 25,
-            onNodeDoubleClick: async function (node) {
-                if (node.labels[0] == "Document") {
-                    if (!node.hasOwnProperty("Expanded") || !node["Expanded"]) {
-                        neo4jd3.updateWithD3Data(node)
-                        await expandDocNode(node.properties.DocID)
-                        neo4jd3.updateWithNeo4jData(modified_doc_json)
-                        node["Expanded"] = true
-                    } // Currently can't hide the nodes on a second double-click
-                }
-            },
-            zoomFit: true
-        });
+        if (!expandedDoc) {
+            var neo4jd3 = new Neo4jd3('#neo4jd3', {
+                highlight: [ // highlighted nodes
+                    {
+                        class: 'User',
+                        property: 'UserID',
+                        value: userid
+                    }
+                ],
+                icons: {
+                    'Document': 'file-text',
+                    'User': 'user',
+                    'Topic': 'folder',
+                    'Entity': 'bank'
+                },
+                images: {
+                    'User': '../neo4jd3/docs/img/twemoji/1f600.svg'
+                },
+                minCollision: 60,
+                neo4jData: modified_json,
+                nodeRadius: 25,
+                onNodeDoubleClick: async function (node) {
+                    if (node.labels[0] == "Document") {
+                        if (!node.hasOwnProperty("Expanded") || !node["Expanded"]) {
+                            neo4jd3.updateWithD3Data(node)
+                            await expandDocNode(node.properties.DocID)
+                            neo4jd3.updateWithNeo4jData(modified_doc_json)
+                            node["Expanded"] = true
+                        } // Currently can't hide the nodes on a second double-click
+                    }
+                },
+                zoomFit: true
+            });
+        } else {
+            var neo4jd3_new = new Neo4jd3('#neo4jd3', {
+                highlight: [ // highlighted nodes
+                    {
+                        class: 'User',
+                        property: 'UserID',
+                        value: userid
+                    }
+                ],
+                icons: {
+                    'Document': 'file-text',
+                    'User': 'user',
+                    'Topic': 'folder',
+                    'Entity': 'bank'
+                },
+                images: {
+                    'User': '../neo4jd3/docs/img/twemoji/1f600.svg'
+                },
+                minCollision: 60,
+                neo4jData: modified_json,
+                nodeRadius: 25,
+                /*onNodeDoubleClick: async function (node) {
+                    if (node.labels[0] == "Document") {
+                        if (!node.hasOwnProperty("Expanded") || !node["Expanded"]) {
+                            neo4jd3_new.updateWithD3Data(node)
+                            await expandDocNode(node.properties.DocID)
+                            neo4jd3_new.updateWithNeo4jData(modified_doc_json)
+                            node["Expanded"] = true
+                        } // Currently can't hide the nodes on a second double-click
+                    }
+                },*/
+                zoomFit: true
+            });
+        }
     }
 }
 

@@ -74,7 +74,7 @@ const start = async function (userid) {
                     var entScore = record.get('score')
                     var entName = record.get('entname')
                     // To create global variable top_entities for use in updateInterests_script.js and addInterests_script.js
-                    top_entities[entName] = {}
+                    top_entities[entName] = { 'sidelab': record.get('ent_label') }
 
                     total_scores += entScore
                     entScores.push(entScore)
@@ -191,7 +191,7 @@ const start = async function (userid) {
                 text: 'Topics We Think You Might Be Interested In'
             },
             subtitle: {
-                text: 'Based on documents you viewed, interests you have indicated, and documents users similar to you viewed (to a smaller extent).'
+                text: 'Based on documents you viewed, interests you have indicated, and documents users similar to you viewed.'
             },
             tooltip: {
                 useHTML: true,
@@ -259,7 +259,7 @@ const start = async function (userid) {
                 text: 'Entities We Think You Might Be Interested In'
             },
             subtitle: {
-                text: 'Based on documents you viewed, interests you have indicated, and documents users similar to you viewed (to a smaller extent).'
+                text: 'Based on documents you viewed, interests you have indicated, and documents users similar to you viewed.'
             },
             tooltip: {
                 useHTML: true,

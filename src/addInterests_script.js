@@ -88,9 +88,8 @@ async function addToLikedItems() {
          // Can also add the liked topics/entities that are not connected to the user to the list of source nodes when computing the pagerank scores.
          // This is done in highcharts_script.js, but effects might be too strong.
       } finally {
-         start(userid)
          init()
-         prep() // includes await setup(userid)
+         prep() // includes await setup(userid) and start(userid)
          location.reload()
       }
    }
