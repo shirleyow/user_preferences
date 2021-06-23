@@ -7,4 +7,4 @@ const driver = neo4j.driver(
     uri,
     neo4j.auth.basic(user, password)
 )
-const userid = 5 // User Fiona Lim in the BBC dataset --> fetched from somewhere
+const userid = 2 //5 // User Fiona Lim in the BBC dataset --> fetched from somewhere
