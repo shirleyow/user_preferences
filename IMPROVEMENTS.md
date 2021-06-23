@@ -5,3 +5,5 @@ Due to the time constraint during the internship (this was completed within the 
 3. There is also a **bug in the Neo4j graph embedded** and it can be triggered in the following way: If any Document node in the graph is EXPANDED, and subsequently the graph is RESETTED, the resetted graph encounters an error when trying to expand a Document node again. Currently, this bug is simply avoided by resetting the graph to a non-expandable graph if any Document node in the previous graph was expanded.
 4. In addition, **direct connection to the Neo4j database can be insecure**. 
 5. Currently the libraries are included in the <script> tags in index.html, thus would require <b>Internet connection</b> for the web-app to work properly. The libraries can be installed using npm to work offline. 
+
+Also, test the backend mechanisms and adjust thresholds/parameters to suit dataset if required. 
