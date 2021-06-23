@@ -38,5 +38,9 @@ Neo4j has to be installed. Internet connection required as well as packages are 
   <li>
     Topic Modelling (LDA Mallet Model): https://colab.research.google.com/drive/1yxgrteoSSXNdYhyobdL70jCTViWU8j1Z?usp=sharing
   </li>
+  <li>
+    Entity Extraction (spaCy en-sm Out-of-Box Model): https://drive.google.com/file/d/1KqgksnwwrTajpRWOA1psT35jK5dJq--7/view?usp=sharing
+  </li>
+  
   <li>(List to be continued)</li>
 </ul>
