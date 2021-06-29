@@ -6,5 +6,6 @@ Due to the time constraint during the internship (this was completed within the 
 4. In addition, **direct connection to the Neo4j database can be insecure**. 
 5. Currently the libraries are included in the <script> tags in index.html, thus would require <b>Internet connection</b> for the web-app to work properly. The libraries can be installed using npm to work offline. 
 6. The updated code sets a property called calc_score for all nodes when the PageRank algorithm is ran for the user. However, this **alters the database** and may cause a problem when multiple users are using the web-app at the same time since the web-app uses the same database across all users. A map projection to create temporary properties for nodes may be a solution to this: https://stackoverflow.com/a/45838433/10939465
+7. Instead of keeping track of the number of documents read by users via the User property numDocs, can count the number of READ relationships connected to the User node instead (via Cypher query).
 
 Also, test the backend mechanisms and adjust thresholds/parameters to suit dataset if required.
