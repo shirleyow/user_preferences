@@ -32,6 +32,8 @@ Neo4j has to be installed. Internet connection required as well as packages are 
   <li>Open http://localhost:8080/dist/ on a browser.</li>
 </ol>
 
+![](Animation.gif)
+  
 <h2>Relevant Jupyter Notebooks:</h2>
 <ul>
   <li>
